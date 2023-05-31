@@ -5,6 +5,10 @@
 #include <conio.h>
 #include <math.h>
 
+//문자열이니까 %s로 해야지 ^^
+//-20으로 해서 칸 수 맞추기..
+//switch문 쓰고 case사용 할때는 break붙여야지..^^
+
 typedef struct Song {
 	char title[100];
 	char artist[100];
