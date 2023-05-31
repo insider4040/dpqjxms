@@ -1,0 +1,80 @@
+//337p 참고
+//385p 참고 -> 구조체 배열 매개변수로 넘기는 방법스.
+//구조체 변수를 main외의 함수에서 어떻게 사용하는지 공부하기
+//구조체 변수를 멤버로 갖는 구조체를 배열로 어떻게 선언하는지 공부 -> {{0, 0}, {{1, 1}} 이러식으로 초기화 시키기..
+//밑에 정규화시키는 부분도 구현 성공함.
+
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <conio.h>
+#include <math.h>
+
+typedef struct point {
+	int x;
+	int y;
+}point_t;
+
+typedef struct Rect { 
+	point_t left, right;
+}rect_t;
+
+
+
+void nomalize (rect_t* ptr);
+void cal_center(const rect_t* ptr);
+
+int main()
+{
+	rect_t arr[3] = {       //구조체 초기화
+		{{5, 7}, {55, 77}},
+		{{10, 20}, {30, 60}},
+		{{55, 11}, {88, 36}}
+	};
+
+	for (int i = 0; i < 3; ++i) {
+		printf("[RECT 좌하단점:(%d, %d) 우상단점:(%d, %d)]", 
+			arr[i].left.x, arr[i].left.y, arr[i].right.x, arr[i].right.y);
+
+		cal_center(&arr[i]);    //구조체 배열 주소 매개변수로기보내기
+		printf("\n");
+	}
+
+	printf("\n");
+	for (int i = 0; i < 3; ++i) {
+		nomalize(&arr[i]);
+	}
+}
+
+//중심점 구하는 함수
+void cal_center(const rect_t* ptr)
+{   
+	int center_x = 0;
+	int center_y = 0;
+
+	center_x = ((ptr->left.x + ptr->right.x) / 2);      //x의 중심점 구하기
+	center_y = ((ptr->left.y + ptr->right.y) / 2);      //y의 중심점 구하기
+
+	printf("   중심점: (%d, %d)", center_x, center_y);   //중심점 프린트 하기
+}
+
+//정규화 시켜주는 
+void nomalize(rect_t* ptr)			//left가 작게 해야됨!
+{
+	int temp = 0;
+
+	if (ptr->left.x > ptr->right.x) {       //left.x가 크면 right.x랑 자리 바꿔주기
+		temp = ptr->right.x;
+		ptr->right.x = ptr->left.x;
+		ptr->left.x = temp;
+	}
+	
+	if (ptr->left.y > ptr->right.y) {       //left.y가 크면 right.y랑 자리 바꿔주기
+		temp = ptr->right.y;
+		ptr->right.y = ptr->left.y;
+		ptr->left.y = temp;
+	}
+
+	printf("[정규화한 결과: 좌하단점: (%d, %d) 우상단점: (%d, %d)]\n", ptr->left.x, ptr->left.y, ptr->right.x, ptr->right.y);
+}
