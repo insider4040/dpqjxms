@@ -4,18 +4,20 @@
 #include <stdlib.h>
 #include <conio.h>
 #include <math.h>
+//왜 fgets쓰면 안 되고, gets_s쓰면 되는거지??
+//구조체에서 장르도 배열 선언해야지..
 
 typedef struct Song {
 	char title[100];
 	char artist[100];
-	char genre;
+	char genre[100];
 }song_t;
 
 void find(const song_t* ptr, char keyword);
 
 int main()
 {
-	char keyword[10] = " ";
+	char keyword[100] = " ";
 
 	song_t song[8] = {
 		{"밤편지", "아이유", "ballad"},
@@ -30,25 +32,27 @@ int main()
 
 	while (1) {
 		printf("키워드(제목/아티스트)? ");
-		fgets(keyword, 10, stdin);
+		gets_s(keyword, 100);
+		//gets_s로 받으니까 갑자기 된다..?
+		//fgets는 왜 안 되지?
 
 		if (strcmp(keyword, ".") == 0) {
 			return 1;
 		}
 
-		char* title = NULL;
-		char* artist = NULL;
+		char* ptr_title = NULL;
+		char* ptr_artist = NULL;
 
 		for (int i = 0; i < 8; ++i) {
-			title = strstr(song[i].title, keyword);
-			artist = strstr(song[i].artist, keyword);
+			ptr_title = strstr(song[i].title, keyword);
+			ptr_artist = strstr(song[i].artist, keyword);
 
-			if (title != NULL || artist != NULL) {
-				printf("%-20s %-20s %-20s", song[i].title, song[i].artist, song[i].genre);
+			if (ptr_title != 0 || ptr_artist != 0) {
+				printf("%-15s %-15s %-15s\n", song[i].title, song[i].artist, song[i].genre);
 			}
 		}
-	}
-}
+	   }
 
-//strstr사용?? 
+		
+} 
 
