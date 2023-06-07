@@ -1,0 +1,39 @@
+//파일 이름도 배열로 만들어야지!!
+//ch에 tolower로 바꾼 ch를 저장시켜도 괜찮지 않니??
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+int main()
+{
+	FILE* fp;
+	char name[100] = "";
+	int ch;
+
+	printf("파일 이름? ");
+	gets_s(name, sizeof(name));
+
+	fp = fopen(name, "r");
+	if (fp == NULL) {
+		printf("파일을 열지 못했습니다.\n");
+		return 1;
+	}
+
+	while (1) {
+		ch = fgetc(fp);		//개방한 파일에서 문자입력...
+
+		if (ch == EOF) {
+			break;
+		}
+
+		//이거 생각못함...
+		ch = tolower(ch);
+
+		putchar(ch);
+	}
+
+	fclose(fp);
+
+	return 0;
+}
