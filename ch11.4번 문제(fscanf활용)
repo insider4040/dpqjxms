@@ -1,0 +1,38 @@
+//파일 이름도 배열로 만들어야지!!
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include "stdarg.h"		//가변인자 사용할때 필요
+
+typedef struct login_info 
+{
+	char id[50];
+	char pw[100];
+}login;
+
+int main()
+{
+	FILE* fp;
+	login arr[4];
+
+	fp = fopen("password.txt", "r");
+	if (fp == NULL) 
+	{
+		printf("파일을 열지 못했습니다.\n");
+		return 1;
+	}
+
+	//fscanf로 각 변수단위로 입력받기. 변수간 구분은 뛰어쓰기나, 탭, 개행문자로..
+	for (int i = 0; i < 4; ++i) {
+		fscanf(fp, "%s %s", &arr[i].id, &arr[i].pw);
+	}
+	fclose(fp);
+
+	printf("4개의 로그인 정보를 읽었습니다.\n");
+
+	for (int i = 0; i < 4; ++i) {
+		printf("ID:%-20s PW:%-20s\n", arr[i].id, arr[i].pw);
+	}
+	return 0;
+}
