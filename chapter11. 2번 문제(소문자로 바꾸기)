@@ -14,7 +14,7 @@ int main()
 	printf("파일 이름? ");
 	gets_s(name, sizeof(name));
 
-	fp = fopen(name, "r");
+	fp = fopen(name, "r"); //r+나 a+도 가능 -> 입출력용 파일 여는거
 	if (fp == NULL) {
 		printf("파일을 열지 못했습니다.\n");
 		return 1;
