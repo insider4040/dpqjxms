@@ -1,0 +1,42 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+int main()
+{
+	FILE* fp;
+	char key[50];
+	int chn_key = 0;
+	char text[100] = "";
+	char change[100] = "";
+
+	printf("암호 키? ");
+	//일단 문자열로 정수 받기
+	fgets(key, sizeof(key), stdin);
+
+	//sscanf로 정수형으로 바꿔주기
+	sscanf(key, "%d", &chn_key);
+
+	printf("암호화할 텍스트? ");
+	gets_s(text, sizeof(text));
+	
+	//파일 열기
+	fp = fopen("cipher.txt", "w");
+
+	for (int i = 0; i < strlen(text); ++i)
+	{
+		//text 파일에 입력받은 문자 바꾸고 다른 문자열에 저장시키기
+		change[i] = text[i] + chn_key;
+	}
+
+	for (int i = 0; i < strlen(text); ++i)
+	{
+		//fp에 바뀐 문자열 저장
+		fprintf(fp, "%c", change[i]);		
+	}
+
+	fclose(fp);
+
+	return 0;
+}
