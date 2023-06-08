@@ -1,0 +1,40 @@
+//파일 이름도 배열로 만들어야지!!
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include "stdarg.h"		//가변인자 사용할때 필요
+
+int main()
+{
+	FILE* or;	//원본
+	FILE* com;	//비교군
+
+	char original[50];		//원본 파일 이름 받기
+	char compare[50];		//비교군 파일 이름 받기
+
+	printf("원본 파일? ");
+	gets_s(original, sizeof(original));
+	or = fopen(original, "r");
+	
+	printf("타겟 파일? ");
+	gets_s(compare, sizeof(compare));
+	com = fopen(compare, "r");
+
+	if (or == NULL || com == NULL)
+	{
+		printf("파일을 열지 못했습니다.\n");
+		return 1;
+	}
+
+	if (strcmp(or , com) == 0)
+	{
+		printf("두 파일이 같습니다.\n");
+	}
+	else
+	{
+		printf("두 파일이 같지 않습니다.\n");
+	}
+
+	return 0;
+}
