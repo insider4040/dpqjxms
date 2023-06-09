@@ -1,0 +1,68 @@
+//2진 파일 출력하려고 할 때 계속 출력 오류가 생긴다...
+#define _CRT_SECURE_NO_WARNINGS
+#include "stdio.h"
+#include "string.h"
+#include "stdlib.h"
+#include "time.h"
+
+int main()
+{
+	int num = 0;
+	FILE* fp;
+	FILE* fn;
+	char name[50];
+	char name2[50];
+	int ch1;
+	int ch2;	
+	int arr[1000] = { 0, };
+
+	printf("파일명? ");
+	gets_s(name, sizeof(name));
+
+	//이름 복사시켜놓기
+	strcpy(name2, name);
+
+	strcat(name, ".txt");
+
+	//문제 없음
+	fp = fopen(name, "w");
+	if (fp == NULL)
+	{
+		printf("파일을 열지 못했습니다.\n");
+		return 1;
+	}
+
+	strcat(name2, ".dat");
+	
+	//2진 파일
+	fn = fopen(name2, "wb");
+	if (fn == NULL)
+	{
+		printf("파일을 열지 못했습니다.\n");
+		return 1;
+	}
+
+
+	//난수 생성
+	srand((unsigned)time(NULL));
+	for (int i = 0; i < 1000; ++i)
+	{
+		num = 0;
+		num = rand() % 1000;
+		arr[i] = num;
+	}
+
+	//파일에 입력하기
+	for (int i = 0; i < 1000; ++i)
+	{
+		fprintf(fp, "%d\n", arr[i]);
+		/*fprintf(fn, "%d\n", arr[i]);*/
+	}
+	fwrite(arr, sizeof(arr[0]), 1000, fn);
+
+	fclose(fp);
+	fclose(fn);
+	fn = NULL;
+
+	return 0;
+}
