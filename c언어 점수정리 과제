@@ -1,0 +1,144 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct student {
+	char name[20];
+	int middle;			//중간
+	int last;			//기말
+	int hw1;			//과제1
+	int hw2;			//과제2
+}student_t;
+
+int middle_avg(const student_t* ptr, int size);			//중간고사 평균구하기
+int last_avg(const student_t* pttr, int size);				//기말고사 평균구하기
+void check(const student_t* ptr3, int size);			//학생점수중 50미만인게 2개이상인 학생 이름 출력시키기.
+void arrangement(const student_t* ptr4, int size);
+
+int main()
+{
+	int number;			//학생수
+
+	printf("학생수? ");
+	scanf_s("%d", &number);
+
+	//구조체 배열 동적할당
+	student_t* students = 0;
+	students = (student_t*)malloc(number * sizeof(student_t));
+
+	printf("학생들 이름? ");
+	for (int i = 0; i < number; ++i) {			//학생들 이름 입력받기
+		scanf("%s", &students[i].name);
+	}
+
+	printf("중간고사 점수? ");
+	for (int i = 0; i < number; ++i) {			//중간점수 입력받기
+		scanf_s("%d", &students[i].middle);
+	}
+
+	printf("기말고사 점수? ");
+	for (int i = 0; i < number; ++i) {			//기말점수 입력받기
+		scanf_s("%d", &students[i].last);
+	}
+
+	printf("과제1 점수? ");							//과제1 점수 입력받기
+	for (int i = 0; i < number; ++i) {
+		scanf_s("%d", &students[i].hw1);
+	}
+
+	printf("과제2 점수? ");
+	for (int i = 0; i < number; ++i) {				//과제2 점수 입력받기
+		scanf_s("%d", &students[i].hw2);
+	}
+
+	arrangement(students, number);
+	printf("\n");
+
+	int print = middle_avg(students, number);
+
+	printf("학생들 중간고사평균: %d\n", print);
+	int print2 = last_avg(students, number);
+	printf("학생들 기말고사평균: %d\n", print2);
+
+	check(students, number);
+
+	//메모리 해제
+	free(students);
+
+	return 0;
+}
+
+
+//중간고사 평균
+int middle_avg(const student_t* ptr, int size)
+{
+	int total = 0;		//총점구하기
+	int result = 0;		//평균저장시키기
+
+	for (int i = 0; i < size; ++i) {
+		total += ptr[i].middle;
+	}
+
+	result = total / size;
+
+	return result;
+}
+
+//기말고사 평균
+int last_avg(const student_t* pttr, int size)
+{
+	int total = 0;		//총점구하기
+	int outcome = 0;		//평균저장시키기
+
+	for (int i = 0; i < size; ++i) {
+		total += pttr[i].last;
+	}
+
+	outcome = total / size;
+
+	return outcome;
+}
+
+
+//점수가 50미만인 학생들 이름 출력시키기...
+void check(const student_t* ptr3, int size)
+{
+	int arr[100] = { 0 };
+	int cnt = 0;
+	int person = 1;
+	printf("점수가 50미만인 과목이 2개이상인 학생이름: ");
+	for (int i = 0; i < size; ++i) {
+		cnt = 0;
+		if (ptr3[i].middle < 50) {
+			++cnt;
+		}
+		if (ptr3[i].last < 50) {
+			++cnt;
+		}
+		if (ptr3[i].hw1 < 50) {
+			++cnt;
+		}
+		if (ptr3[i].hw2 < 50) {
+			++cnt;
+		}
+		arr[i] = cnt;
+	}
+
+	for (int i = 0; i < size; ++i) {
+		if (arr[i] >= 2) {
+			printf("%s ", ptr3[i].name);
+		}
+	}
+	printf("\n");
+}
+
+//표처럼 정리시키기
+void arrangement(const student_t* ptr4, int size)
+{
+	printf("	중간 기말 과제1 과제2 \n");
+	for (int i = 0; i < size; ++i) {
+		printf("%s", ptr4[i].name);
+		printf("	%4d %4d %4d %4d\n", ptr4[i].middle, ptr4[i].last, ptr4[i].hw1, ptr4[i].hw2);		//숫자랑 글자랑 칸 맞출 때 한글은 한글자당 2씩이다.. 영어는 1씩...
+	}
+}
