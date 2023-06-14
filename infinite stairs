@@ -1,21 +1,22 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 #include <windows.h>
 
 #define UP 72
 #define ARROW 224
-#define LEFT 75
-#define RIGHT 77
 #define BIGZ 90
 #define SMALLZ 122
+
+//좌표 받을 전역변수
+int coord_x[20];
+int coord_y[20];
 
 typedef struct _STAIRS {
     char stair[4];
 }STAIRS;
 
-void gotoxy(int x, int y) 
+void gotoxy(int x, int y)
 {
     COORD coord;
     coord.X = x;
@@ -26,30 +27,47 @@ void gotoxy(int x, int y)
 //틀 출력시키기
 void print_frame();
 //처음에 계단 출력
-void print_normalstair(int x, int y);
+void print_normalstair(int x, int y, const STAIRS arr[], int com[], int com2[]);
 //왼쪽 그대로 진행하는 함수
-void normal_direction(int* x, int* y);
+void normal_direction(int* x, int* y, const STAIRS arr[], int com[], int com2[]);
 //방향 바꾸는 함수
-void change_direction(int* chr_x, int* chr_y);
+void change_direction(int* x, int* y, const STAIRS arr[]);
 
-int main() 
+int main()
 {
     srand((unsigned)time(NULL));        //겹치는 거 없이 난수 생성시키게 해줌
     int y = 25;
-    int x = 40;
+    int x = 30;
     int key;
-    int chr_x = 44;  //캐릭터의 x 좌표, 이동할 때 -2씩
+    int chr_x = 34;  //캐릭터의 x 좌표, 이동할 때 -2씩
     int chr_y = 25;  //캐릭터의 y 좌표, 이동할 때 -1씩
-    int* ptr_x;
-    int* ptr_y;
+    int* ptr_x;    
+    int* ptr_y;    
     ptr_x = &chr_x; //캐릭터 x좌표의 주소를 저장
     ptr_y = &chr_y; //캐릭터 y좌표의 주소를 저장
+
+    //구조체 포인터 배열 동적할당
+    STAIRS* arr = (STAIRS*)malloc(sizeof(STAIRS) * 20);
+
+    //구조체 안에 stair -> ###으로 초기화 시켜주기
+    for (int i = 0; i < 20; ++i)
+    {
+        strcpy(arr[i].stair, "###");
+    }
+
+    int num[20];
+    int num2[20];
+    for (int i = 0; i < 20; ++i)
+    {
+        num[i] = (rand() % 100 < 38) ? 0 : 1;
+        num2[i] = (rand() % 100 < 50) ? 1 : 0;
+    }
 
     //틀 출력
     print_frame();
 
     //처음에 계단 출력
-    print_normalstair(x, y);
+    print_normalstair(x, y, arr, num, num2);        
 
     //처음에 캐릭터 위치, 출력
     gotoxy(chr_x, chr_y);
@@ -66,23 +84,23 @@ int main()
 
         switch (key)
         {
-        case LEFT:
+        case UP:
         {
             //원래 방향 그대로
-            normal_direction(ptr_x, ptr_y);
+            normal_direction(ptr_x, ptr_y, arr, num, num2);
 
             break;
         }
-        case RIGHT:
+        case BIGZ:
         {
-            change_direction(ptr_x, ptr_y);
+            change_direction(ptr_x, ptr_y, arr);
 
             break;
         }
         case SMALLZ:
         {
             //방향 바꿔주기
-            change_direction(ptr_x, ptr_y);
+            change_direction(ptr_x, ptr_y, arr);
 
             break;
         }
@@ -106,7 +124,7 @@ void print_frame()
     {
         printf("%c", frame_garo);
     }
-    
+
     printf("\n");
     printf("%12c %61c\n", frame_sero, frame_sero);
     for (int i = 0; i < 22; ++i)
@@ -114,25 +132,16 @@ void print_frame()
         printf("%12c %61c\n", frame_sero, frame_sero);
     }
 
-    printf("%13c", frame_garo);
+    /*printf("%13c", frame_garo);
     for (int i = 0; i < 60; ++i)
     {
         printf("%c", frame_garo);
-    }
+    }*/
 }
 
-void print_normalstair(int x, int y)
+void print_normalstair(int x, int y, const STAIRS arr[], int com[], int com2[])
 {
     int cnt = 0;
-
-    STAIRS* arr = (STAIRS*)malloc(sizeof(STAIRS) * 20);
-
-    for (int i = 0; i < 20; ++i)
-    {
-        strcpy(arr[i].stair, "###");
-    }
-
-
 
     for (int i = 0; i < 20; ++i)
     {
@@ -141,13 +150,13 @@ void print_normalstair(int x, int y)
             break;
         }
 
+        coord_x[i] = x;
+        coord_y[i] = y;
         gotoxy(x, y);
         printf("%s", arr[i].stair);
 
         y -= 1;
-
-        int num = (rand() % 100 < 30) ? 0 : 1;
-        int num2 = (rand() % 100 < 30) ? 1 : 0;
+        
 
         //두 번째 칸은 무조건 왼쪽에 나오게
         if (y == 24)
@@ -156,41 +165,75 @@ void print_normalstair(int x, int y)
         }
         else if (y != 24)
         {
-            if (num == num2)
+            if (com[i] == com2[i])
             {
                 x += 3;
             }
-            else if (num != num2)
+            else if (com[i] != com2[i])
             {
                 x -= 3;
+
             }
-        }
+        }     
     }
 }
 
-//방향 바꾸기
-void change_direction(int* chr_x, int* chr_y)
+void change_direction(int* x, int* y, const STAIRS arr[])
 {
-    gotoxy(*chr_x, *chr_y);
+    /*gotoxy(*chr_x, *chr_y);
     printf(" ");
 
     *chr_x += 3;
     *chr_y -= 1;
 
     gotoxy(*chr_x, *chr_y);
-    printf("@"); 
-}
+    printf("@");*/
 
-
-//원래 방향으로
-void normal_direction(int* x, int* y)
-{
-    gotoxy(*x, *y);
-    printf(" ");
-
-    *x -= 3;
-    *y -= 1;
+    system("cls");
+    print_frame();
 
     gotoxy(*x, *y);
     printf("@");
+
+    for (int i = 0; i < 20; ++i)
+    {
+
+    }
+}
+
+void normal_direction(int* x, int* y, const STAIRS arr[], int com[], int com2[])   //garo: x축, sero: y축
+{
+    system("cls");
+    print_frame();
+
+    gotoxy(*x, *y);
+    printf("@");
+
+    if (com[0] == com2[0])
+    {
+        gotoxy(coord_x[19] + 6, coord_y[19]);
+        printf("%s", arr[0].stair);
+    }
+    else if (com[0] != com2[0])
+    {
+        gotoxy(coord_x[19], coord_y[19]);
+        printf("%s", arr[0].stair);
+    }
+
+    gotoxy(coord_x[0] + 3, coord_y[0] + 1);
+    printf("%s", arr[0].stair);
+
+    for (int i = 0; i < 20; ++i)
+    {
+        coord_y[i] += 1;
+        coord_x[i] += 3;
+
+        gotoxy(coord_x[i], coord_y[i]);
+        printf("%s", arr[i].stair);
+
+        if (coord_y[i] == 28)
+        {
+            strcpy(arr[i].stair, " ");
+        }
+    }
 }
