@@ -8,7 +8,7 @@
 #define BIGZ 90
 #define SMALLZ 122
 
-//좌표 받을 전역변수
+//좌표 받을 전역변수, 좌표는 0->19 = 25-> ~ 이런식으로
 int coord_x[20];
 int coord_y[20];
 
@@ -29,9 +29,9 @@ void print_frame();
 //처음에 계단 출력
 void print_normalstair(int x, int y, const STAIRS arr[], int com[], int com2[]);
 //왼쪽 그대로 진행하는 함수
-void normal_direction(int* x, int* y, const STAIRS arr[], int com[], int com2[]);
+void normal_direction(int* x, int* y, const STAIRS arr[], int com[], int com2[], int cnt);
 //방향 바꾸는 함수
-void change_direction(int* x, int* y, const STAIRS arr[]);
+void change_direction(int* x, int* y, const STAIRS arr[], int cnt);
 
 int main()
 {
@@ -73,6 +73,8 @@ int main()
     gotoxy(chr_x, chr_y);
     printf("@");
 
+    int count = 0;
+
     while (1)
     {
         key = _getch();
@@ -87,20 +89,21 @@ int main()
         case UP:
         {
             //원래 방향 그대로
-            normal_direction(ptr_x, ptr_y, arr, num, num2);
+            normal_direction(ptr_x, ptr_y, arr, num, num2, count);
 
             break;
         }
         case BIGZ:
         {
-            change_direction(ptr_x, ptr_y, arr);
-
+            change_direction(ptr_x, ptr_y, arr, count);
+            ++count;
             break;
         }
         case SMALLZ:
         {
+            ++count;
             //방향 바꿔주기
-            change_direction(ptr_x, ptr_y, arr);
+            change_direction(ptr_x, ptr_y, arr, count);
 
             break;
         }
@@ -178,7 +181,7 @@ void print_normalstair(int x, int y, const STAIRS arr[], int com[], int com2[])
     }
 }
 
-void change_direction(int* x, int* y, const STAIRS arr[])
+void change_direction(int* x, int* y, const STAIRS arr[], int cnt)
 {
     /*gotoxy(*chr_x, *chr_y);
     printf(" ");
@@ -192,11 +195,16 @@ void change_direction(int* x, int* y, const STAIRS arr[])
     system("cls");
     print_frame();
 
+    //캐릭터 고정된 위치에 출력
     gotoxy(*x, *y);
     printf("@");
 
-    for (int i = 0; i < 20; ++i)
+    //캐릭터가 오른쪽으로 올라가는 것처럼 보이게 하기
+    if (cnt % 2 != 0)
     {
+        //밑으로 내리는거
+        for (int i = 0; i < 20; ++i)
+        {
             coord_y[i] += 1;
             coord_x[i] -= 3;
 
@@ -207,18 +215,38 @@ void change_direction(int* x, int* y, const STAIRS arr[])
             {
                 strcpy(arr[i].stair, " ");
             }
+        }
     }
-    
+    //캐릭터가 왼쪽으로 올라가는 것처럼 보이게 하기
+    else if (cnt % 2 == 0)
+    {
+        //밑으로 내리기
+        for (int i = 0; i < 20; ++i)
+        {
+            coord_y[i] += 1;
+            coord_x[i] += 3;
+
+            gotoxy(coord_x[i], coord_y[i]);
+            printf("%s", arr[i].stair);
+
+            if (coord_y[i] == 28)
+            {
+                strcpy(arr[i].stair, " ");
+            }
+        }
+    }
 }
 
-void normal_direction(int* x, int* y, const STAIRS arr[], int com[], int com2[])   //garo: x축, sero: y축
+void normal_direction(int* x, int* y, const STAIRS arr[], int com[], int com2[], int cnt)   //garo: x축, sero: y축
 {
     system("cls");
     print_frame();
 
+    //캐릭터 고정된 위치에 출력
     gotoxy(*x, *y);
     printf("@");
 
+    //맨위에 계단 출력시키기
     if (com[0] == com2[0])
     {
         gotoxy(coord_x[19] + 6, coord_y[19]);
@@ -230,20 +258,45 @@ void normal_direction(int* x, int* y, const STAIRS arr[], int com[], int com2[])
         printf("%s", arr[0].stair);
     }
 
+    //(25, 30) 좌표에 있는 것은 무조건 캐릭터 밑에 오게 만들기
     gotoxy(coord_x[0] + 3, coord_y[0] + 1);
     printf("%s", arr[0].stair);
 
-    for (int i = 0; i < 20; ++i)
+    //캐릭터 왼쪽으로 올라가게 한느 것처럼 보이게 하기.
+    if (cnt % 2 == 0)
     {
-        coord_y[i] += 1;
-        coord_x[i] += 3;
-
-        gotoxy(coord_x[i], coord_y[i]);
-        printf("%s", arr[i].stair);
-
-        if (coord_y[i] == 28)
+        //밑으로 내리기
+        for (int i = 0; i < 20; ++i)
         {
-            strcpy(arr[i].stair, " ");
+            coord_y[i] += 1;
+            coord_x[i] += 3;
+
+            gotoxy(coord_x[i], coord_y[i]);
+            printf("%s", arr[i].stair);
+
+            if (coord_y[i] == 28)
+            {
+                strcpy(arr[i].stair, " ");
+            }
+        }
+    }
+
+    //캐릭터 오른쪽으로 올라가는 것처럼 보이게 하기
+    else if(cnt % 2 != 0)
+    {
+        //밑으로 내리는거
+        for (int i = 0; i < 20; ++i)
+        {
+            coord_y[i] += 1;
+            coord_x[i] -= 3;
+
+            gotoxy(coord_x[i], coord_y[i]);
+            printf("%s", arr[i].stair);
+
+            if (coord_y[i] == 28)
+            {
+                strcpy(arr[i].stair, " ");
+            }
         }
     }
 }
