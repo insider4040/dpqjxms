@@ -197,8 +197,18 @@ void change_direction(int* x, int* y, const STAIRS arr[])
 
     for (int i = 0; i < 20; ++i)
     {
+            coord_y[i] += 1;
+            coord_x[i] -= 3;
 
+            gotoxy(coord_x[i], coord_y[i]);
+            printf("%s", arr[i].stair);
+
+            if (coord_y[i] == 28)
+            {
+                strcpy(arr[i].stair, " ");
+            }
     }
+    
 }
 
 void normal_direction(int* x, int* y, const STAIRS arr[], int com[], int com2[])   //garo: x축, sero: y축
