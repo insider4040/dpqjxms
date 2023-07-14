@@ -6,6 +6,14 @@
 
 #define SPACEBAR 32
 #define ARROW 224
+#define NOR_SPEED 50
+#define MAX_SPEED 30
+#define HIT_SPEED 50
+
+unsigned _stdcall Thread_1(void* arg)//스레드 함수 선언
+{
+
+}
 
 //커서 없애줌
 void hide_cursor(int n) // 커서 깜빡임 삭제
@@ -46,7 +54,7 @@ void man()
 
 	//마운드
 	gotoxy(85, 30);
-	printf("@\n");
+	printf("=\n");
 
 	//홈
 	gotoxy(85, 40);
@@ -60,7 +68,10 @@ void print_ball()
 	{
 		gotoxy(84, i);
 		printf("*");
-		Sleep(15);
+		Sleep(MAX_SPEED);
+		//이전 공 지우기
+		gotoxy(84, i);
+		printf(" ");
 	}
 }
 
@@ -79,8 +90,10 @@ void print_ball2()
 		{
 			gotoxy(j, i);
 			printf("*");
-			Sleep(50);
-
+			Sleep(NOR_SPEED);
+			//이전 공 지우기
+			gotoxy(j, i);
+			printf(" ");
 			++j;
 		}
 
@@ -90,7 +103,10 @@ void print_ball2()
 
 			gotoxy(j, i);
 			printf("*");
-			Sleep(15);
+			Sleep(MAX_SPEED);
+			//이전 공 지우기
+			gotoxy(j, i);
+			printf(" ");
 		}
 	}
 	else
@@ -99,8 +115,10 @@ void print_ball2()
 		{
 			gotoxy(j, i);
 			printf("*");
-			Sleep(50);
-
+			Sleep(NOR_SPEED);
+			//이전공 지우기
+			gotoxy(j, i);
+			printf(" ");
 			--j;
 		}
 
@@ -110,7 +128,10 @@ void print_ball2()
 
 			gotoxy(j, i);
 			printf("*");
-			Sleep(15);
+			Sleep(MAX_SPEED);	
+			//이전 공 지우기
+			gotoxy(j, i);
+			printf(" ");
 		}
 	}
 }
@@ -177,16 +198,29 @@ void hit_bunt()
 	srand((unsigned)time(NULL));
 	int ran_bunt = 0;
 	ran_bunt = (rand() % 100 < 10) ? 0 : 1;
-	//타격할때 x좌표 랜덤
-	int ran2 = 0;
-	//타격할 때 y좌표 랜덤
-	int ran3 = 0;
+
+	int i = 85;
 
 	system("cls");
 	man();
-
+	//홈: 85, 40
 	if (ran_bunt == 0)//번트안타
 	{
+		//좌표: 56, 31
+		for (int j = 39; j < 30; j--)//총 9번
+		{
+			gotoxy(i, j);
+			printf(" ");
+			/*Sleep(1000);
+			gotoxy(i, j);
+			printf("*");*/
+
+			i -= 4;
+			if (j >= 33)
+			{
+				i = 114;
+			}
+		}
 		gotoxy(56, 31);
 		printf("*");
 	}
@@ -195,11 +229,39 @@ void hit_bunt()
 		ran_bunt = (rand() % 100 < 15) ? 0 : 1;
 		if (ran_bunt == 0)//파울
 		{
+			//좌표: 60, 35
+			for (int j = 39; j < 34; j--)
+			{
+				gotoxy(i, j);
+				printf("*");
+				/*Sleep(1000);
+				gotoxy(i, j);
+				printf(" ");*/
+				i -= 5;
+			}
 			gotoxy(60, 35);
 			printf("*");
 		}
 		else//아웃
 		{
+			//좌표: 114, 31
+
+			for (int j = 39; j < 30; j--)
+			{
+				gotoxy(i, j);
+				printf("*");
+
+				/*Sleep(1000);
+
+				gotoxy(i, j);
+				printf(" ");*/
+
+				i += 4;
+				if (j >= 33)
+				{
+					i = 114;
+				}
+			}
 			gotoxy(114, 31);
 			printf("*");
 		}
