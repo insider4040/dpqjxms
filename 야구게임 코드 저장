@@ -1,0 +1,281 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <stdlib.h>
+#include <conio.h>
+#include <windows.h>
+
+#define SPACEBAR 32
+#define ARROW 224
+
+//커서 없애줌
+void hide_cursor(int n) // 커서 깜빡임 삭제
+{
+	HANDLE hConsole;
+	CONSOLE_CURSOR_INFO ConsoleCursor;
+
+	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	ConsoleCursor.bVisible = n;
+	ConsoleCursor.dwSize = 1;
+
+	SetConsoleCursorInfo(hConsole, &ConsoleCursor);
+}
+
+//좌표변경시켜줌
+void gotoxy(int x, int y)
+{
+	COORD pos = { x,y };
+
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
+
+}
+
+//베이스랑 마운드 출력
+void man()
+{
+	//2루
+	gotoxy(85, 20);
+	printf("@\n");
+
+	//3루
+	gotoxy(55, 30);
+	printf("@\n");
+
+	//1루
+	gotoxy(115, 30);
+	printf("@\n");
+
+	//마운드
+	gotoxy(85, 30);
+	printf("@\n");
+
+	//홈
+	gotoxy(85, 40);
+	printf("@\n");
+}
+
+//직구 프린트하기
+void print_ball()
+{
+	for (int i = 31; i < 41; ++i)
+	{
+		gotoxy(84, i);
+		printf("*");
+		Sleep(15);
+	}
+}
+
+//변화구 프린트하기
+void print_ball2()
+{
+	srand((unsigned)time(NULL));
+	int ran = 0;
+	ran = (rand() % 100 < 50) ? 0 : 1;
+
+	int j = 84;
+
+	if (ran == 0)
+	{
+		for (int i = 31; i < 36; ++i)
+		{
+			gotoxy(j, i);
+			printf("*");
+			Sleep(50);
+
+			++j;
+		}
+
+		for (int i = 36; i < 41; ++i)
+		{
+			--j;
+
+			gotoxy(j, i);
+			printf("*");
+			Sleep(15);
+		}
+	}
+	else
+	{
+		for (int i = 31; i < 36; ++i)
+		{
+			gotoxy(j, i);
+			printf("*");
+			Sleep(50);
+
+			--j;
+		}
+
+		for (int i = 36; i < 41; ++i)
+		{
+			++j;
+
+			gotoxy(j, i);
+			printf("*");
+			Sleep(15);
+		}
+	}
+}
+
+//타격방법 선택
+int print_hitting()
+{
+	int hit = 0;
+
+	gotoxy(77, 5);
+	printf("1.타격\t 2.번트\t");
+	scanf_s(" %d", &hit);
+
+	return hit;
+}
+
+//안타()
+void hit_single()
+{
+	srand((unsigned)time(NULL));
+
+	system("cls");
+	man();
+
+	//홈런 또는 안타
+	int homerun_single = 0;
+	homerun_single = (rand() % 100 < 5) ? 0 : 1;
+	//타격할때 x좌표 랜덤
+	int ran2 = 0;
+	//타격할 때 y좌표 랜덤
+	int ran3 = 0;
+
+	if (homerun_single == 0)//홈런
+	{
+
+	}
+	else if (homerun_single == 1)//안타 또는 파울
+	{
+		homerun_single = (rand() % 100 < 15) ? 0 : 1;
+
+		if (homerun_single == 0)//파울
+		{
+
+		}
+		else//파울
+		{
+
+		}
+	}
+	ran2 = rand() % 135;
+	ran3 = rand() % 40;
+
+	if (ran2 < 37)
+	{
+		ran2 = ran2 + (37 - ran2);
+	}
+	gotoxy(ran2, ran3);
+	printf("*");
+}
+
+//번트
+void hit_bunt()
+{
+	srand((unsigned)time(NULL));
+	int ran_bunt = 0;
+	ran_bunt = (rand() % 100 < 10) ? 0 : 1;
+	//타격할때 x좌표 랜덤
+	int ran2 = 0;
+	//타격할 때 y좌표 랜덤
+	int ran3 = 0;
+
+	system("cls");
+	man();
+
+	if (ran_bunt == 0)//번트안타
+	{
+		gotoxy(56, 31);
+		printf("*");
+	}
+	else//파울 또는 아웃
+	{
+		ran_bunt = (rand() % 100 < 15) ? 0 : 1;
+		if (ran_bunt == 0)//파울
+		{
+			gotoxy(60, 35);
+			printf("*");
+		}
+		else//아웃
+		{
+			gotoxy(114, 31);
+			printf("*");
+		}
+	}
+}
+
+int main()
+{
+	char play;
+	srand((unsigned)time(NULL));
+	int ran = 0;
+	//타격방법 선택
+	int hit = 0;
+
+	int key = 0;
+	//커서 숨기기
+	hide_cursor(0);
+
+	printf("플레이? ");
+	scanf("%c", &play);
+
+	if (play == 'y' || play == 'Y')
+	{
+		system("cls");
+	}
+
+	while (1)
+	{
+		//변화구 또는 직구 나오게 랜덤
+		ran = (rand() % 100 < 50) ? 0 : 1;
+
+		man();
+
+		hit = print_hitting();
+
+		Sleep(1000);
+
+		if (ran == 0) //직구
+		{
+			print_ball();
+		}
+		else //변화구
+		{
+			print_ball2();
+		}
+
+		key = _getch();
+		if (key == ARROW)
+		{
+			key = _getch();
+		}
+
+		switch (key)
+		{
+		case SPACEBAR:
+		{
+			//안타
+			if (hit == 1)
+			{
+				hit_single();
+			}
+			//번트
+			else
+			{
+				hit_bunt();
+			}
+
+			break;
+		}
+		default:
+		{
+			break;
+		}
+		}
+
+		Sleep(1000);
+		system("cls");
+	}
+}
