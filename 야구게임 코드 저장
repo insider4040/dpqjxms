@@ -6,14 +6,11 @@
 
 #define SPACEBAR 32
 #define ARROW 224
-#define NOR_SPEED 50
-#define MAX_SPEED 30
-#define HIT_SPEED 50
-
-unsigned _stdcall Thread_1(void* arg)//스레드 함수 선언
-{
-
-}
+#define NOR_SPEED 50//투수가 공 던질 때 일반 속도
+#define MAX_SPEED 30//공 빨리 던져질 때 속도
+#define HIT_SPEED 100 //공 치고 나가는 속도
+#define BUNT_SPEED 70 //번트 쳤을 때 공 스피드
+#define FOUL_OUT_SPEED 50//파울이나 아웃될 때 공 스피드
 
 //커서 없애줌
 void hide_cursor(int n) // 커서 깜빡임 삭제
@@ -38,8 +35,39 @@ void gotoxy(int x, int y)
 }
 
 //베이스랑 마운드 출력
-void man()
+void map()
 {
+	int j = 6;
+
+	//경기장 선
+	gotoxy(85, 5);
+	printf("-");
+	for (int i = 82; i > 36; i -= 3)
+	{
+		gotoxy(i, j);
+		printf("-");
+		j++;
+	}
+	j = 6;
+	for (int i = 88; i < 134; i += 3)
+	{
+		gotoxy(i, j);
+		printf("-");
+		j++;
+	}
+
+	//중견수
+	gotoxy(85, 13);
+	printf("@\n");
+
+	//좌익수
+	gotoxy(55, 20);
+	printf("@");
+
+	//우익수
+	gotoxy(115, 20);
+	printf("@");
+
 	//2루
 	gotoxy(85, 20);
 	printf("@\n");
@@ -141,7 +169,7 @@ int print_hitting()
 {
 	int hit = 0;
 
-	gotoxy(77, 5);
+	gotoxy(77, 0);
 	printf("1.타격\t 2.번트\t");
 	scanf_s(" %d", &hit);
 
@@ -154,42 +182,747 @@ void hit_single()
 	srand((unsigned)time(NULL));
 
 	system("cls");
-	man();
+	map();
+
+	//치고 나서 정해진 위치 랜덤하게 정하기
+	int ran = 0;
 
 	//홈런 또는 안타
 	int homerun_single = 0;
-	homerun_single = (rand() % 100 < 5) ? 0 : 1;
-	//타격할때 x좌표 랜덤
-	int ran2 = 0;
-	//타격할 때 y좌표 랜덤
-	int ran3 = 0;
+	homerun_single = (rand() % 100 < 10) ? 0 : 1;
 
-	if (homerun_single == 0)//홈런
+	//시작 지점
+	int x = 84;
+	int y = 40;
+
+	//수비가 가야하는 x, y위치 저장.
+	int def_x = 0;
+	int def_y = 0;
+
+	//홈런
+	if (homerun_single == 0)
 	{
+		ran = rand() % 7;
+
+		switch (ran)
+		{
+		case 0:
+		{//37, 18
+
+			while (y >= 18) {
+				if (y < 33)
+				{
+					gotoxy(80, 0);
+					printf("쭉쭉 넘어가는 타구");
+				}
+				gotoxy(x, y);
+				printf("*");
+				Sleep(HIT_SPEED);
+				gotoxy(x, y);
+				printf(" ");
+				x -= 2;
+				y--;
+				map();
+			}
+			gotoxy(80, 0);
+			printf("                                      ");
+			gotoxy(80, 0);
+			printf("넘어갑니다!!");
+			gotoxy(x, y);
+			printf("*");
+
+			break;
+		}
+		case 1:
+		{//46,12
+
+			while (y >= 12)
+			{
+				if (y < 30)
+				{
+					gotoxy(80, 0);
+					printf("쭉쭉 가는 타구");
+				}
+				gotoxy(x, y);
+				printf("*");
+				Sleep(HIT_SPEED);
+				gotoxy(x, y);
+				printf(" ");
+				if (y % 2 == 0)
+				{
+					x -= 1;
+				}
+				else
+				{
+					x -= 2;
+				}
+				y--;
+				map();
+			}
+			gotoxy(80, 0);
+			printf("                                      ");
+			gotoxy(80, 0);
+			printf("수비가 잡을 수 없는곳으로 넘어갑니다!!");
+			gotoxy(x, y);
+			printf("*");
+
+			break;
+		}
+		case 2:
+		{//61, 8
+			while (y >= 8)
+			{
+				if (y < 29)
+				{
+					gotoxy(80, 0);
+					printf("담장 뒤로 담장 뒤로");
+				}
+				gotoxy(x, y);
+				printf("*");
+				Sleep(HIT_SPEED);
+				gotoxy(x, y);
+				printf(" ");
+				if (y % 2 == 0)
+				{
+					x -= 1;
+				}
+				else
+				{
+					x -= 0;
+				}
+				y--;
+				map();
+			}
+			gotoxy(80, 0);
+			printf("                                      ");
+			gotoxy(80, 0);
+			printf("넘어갑니다!!");
+			gotoxy(x, y);
+			printf("*");
+
+			break;
+		}
+		case 3: 
+		{//85, 2
+			x += 1;
+			while (y >= 2)
+			{
+				if (y < 28)
+				{
+					gotoxy(80, 0);
+					printf("중견수를 넘어가는 타구");
+				}
+				gotoxy(x, y);
+				printf("*");
+				Sleep(HIT_SPEED);
+				gotoxy(x, y);
+				printf(" ");
+
+				y--;
+				map();
+			}
+			gotoxy(80, 0);
+			printf("                                      ");
+			gotoxy(80, 0);
+			printf("완벽한 아치를 그려냅니다!!");
+			gotoxy(85, 2);
+			printf("*");
+
+			break;
+		}
+		case 4: 
+		{
+			//109, 8
+			while (y >= 8)
+			{
+				if (y < 29)
+				{
+					gotoxy(80, 0);
+					printf("간다간다간다간다");
+				}
+				gotoxy(x, y);
+				printf("*");
+				Sleep(HIT_SPEED);
+				gotoxy(x, y);
+				printf(" ");
+				if (y % 2 == 0)
+				{
+					x += 1;
+				}
+				else
+				{
+					x += 0;
+				}
+				y--;
+
+				map();
+			}
+			gotoxy(80, 0);
+			printf("                                      ");
+			gotoxy(80, 0);
+			printf("호옴런!!");
+			gotoxy(x, y);
+			printf("*");
+
+			break;
+		}
+		case 5:
+		{//124, 12
+			while (y >= 12)
+			{
+				if (y < 30)
+				{
+					gotoxy(80, 0);
+					printf("오른쪼오오오오옥");
+				}
+				gotoxy(x, y);
+				printf("*");
+				Sleep(HIT_SPEED);
+				gotoxy(x, y);
+				printf(" ");
+				if (y % 2 == 0)
+				{
+					x += 1;
+				}
+				else
+				{
+					x += 2;
+				}
+				y--;
+				map();
+			}
+			gotoxy(80, 0);
+			printf("                                      ");
+			gotoxy(80, 0);
+			printf("돌아올 수 없는 곳으로 넘어갑니다!!");
+			gotoxy(x, y);
+			printf("*");
+		    
+			break;
+		}
+		case 6:
+		{
+			// 133, 18
+			while (y >= 18)
+			{
+				if (y < 32)
+				{
+					gotoxy(80, 0);
+					printf("이 타구 이 타구");
+				}
+				gotoxy(x, y);
+				printf("*");
+				Sleep(HIT_SPEED);
+				gotoxy(x, y);
+				printf(" ");
+
+				x += 2;
+				y--;
+				map();
+			}
+			gotoxy(80, 0);
+			printf("                                      ");
+			gotoxy(80, 0);
+			printf("아무도 잡을 수 없습니다!!");
+			gotoxy(x, y);
+			printf("*");
+
+			break;
+		}
+		}
 
 	}
-	else if (homerun_single == 1)//안타 또는 파울
+	//파울 또는 안타
+	else if (homerun_single == 1)
 	{
-		homerun_single = (rand() % 100 < 15) ? 0 : 1;
-
+		homerun_single = (rand() % 100 < 25) ? 0 : 1;
+		//파울
 		if (homerun_single == 0)//파울
 		{
+			ran = (rand() % 100 < 50) ? 0 : 1;
 
+			if (ran == 0)//왼쪽 파울
+			{
+				while (y >= 29)
+				{
+					if (y < 35)
+					{
+						gotoxy(80, 0);
+						printf("좌측으로 가는 타구");
+					}
+					gotoxy(x, y);
+					printf("*");
+					Sleep(FOUL_OUT_SPEED);
+					gotoxy(x, y);
+					printf(" ");
+					x -= 5;
+					y--;
+					map();
+				}
+				gotoxy(80, 0);
+				printf("                   ");
+				gotoxy(80, 0);
+				printf("파울입니다.");
+				gotoxy(x, y);
+				printf("*");
+			}
+			else//오른쪽 파울
+			{
+				//140, 25
+				while (y >= 29)
+				{
+					if (y < 35)
+					{
+						gotoxy(80, 0);
+						printf("우측으로 가는 타구");
+					}
+					gotoxy(x, y);
+					printf("*");
+					Sleep(FOUL_OUT_SPEED);
+					gotoxy(x, y);
+					printf(" ");
+					x += 5;
+					y--;
+					map();
+				}
+				gotoxy(80, 0);
+				printf("                   ");
+				gotoxy(80, 0);
+				printf("파울입니다.");
+				gotoxy(x, y);
+				printf("*");
+			}
 		}
-		else//파울
+		//안타 또는 뜬공
+		else
 		{
+			homerun_single = (rand() % 100 < 30) ? 2 : 1;
+			//1루타 또는 뜬공 아웃
+			if (homerun_single == 1)
+			{
+				homerun_single = (rand() % 100 < 70) ? 0 : 1;
+				//뜬공
+				if (homerun_single == 0)
+				{
+					ran = rand() % 3;
+					switch (ran)
+					{
+					case 0://좌익수 뜬공
+					{//56, 21 -> 좌
 
+						while (y >= 21)
+						{
+							if (y < 32)
+							{
+								gotoxy(80, 0);
+								printf("좌익수 높이 뜬공");
+							}
+							gotoxy(x, y);
+							printf("*");
+							Sleep(FOUL_OUT_SPEED);
+							gotoxy(x, y);
+							printf(" ");
+							if (y % 2 == 0)
+							{
+								x -= 1;
+							}
+							else
+							{
+								x -= 2;
+							}
+							--y;
+						}
+						gotoxy(80, 0);
+						printf("                              ");
+						gotoxy(80, 0);
+						printf("아웃입니다.");
+						gotoxy(x, y);
+						printf("*");
+						break;
+					}
+					case 1://중견수 뜬공
+					{//86, 13 -> 중앙
+						while (y >= 14)
+						{
+							if (y < 32)
+							{
+								gotoxy(80, 0);
+								printf("중견수 높이 뜬공");
+							}
+							gotoxy(x, y);
+							printf("*");
+							Sleep(FOUL_OUT_SPEED);
+							gotoxy(x, y);
+							printf(" ");
+							y--;
+						}
+						gotoxy(80, 0);
+						printf("                         ");
+						gotoxy(80, 0);
+						printf("아웃입니다.");
+					
+						gotoxy(x, y);
+						printf("*");
+						break;
+					}
+					case 2://우익수 뜬공
+					{//116, 20 -> 우
+						while (y >= 21)
+						{
+							if (y < 32)
+							{
+								gotoxy(80, 0);
+								printf("우익수 높이 뜬공");
+							}
+							gotoxy(x, y);
+							printf("*");
+							Sleep(FOUL_OUT_SPEED);
+							gotoxy(x, y);
+							printf(" ");
+							if (y % 2 == 0)
+							{
+								x += 1;
+							}
+							else
+							{
+								x += 2;
+							}
+							y--;
+						}
+						gotoxy(80, 0);
+						printf("                         ");
+						gotoxy(80, 0);
+						printf("아웃입니다.");
+						gotoxy(x, y);
+						printf("*");
+						break;
+					}
+					}
+				}
+				//1루타
+				else
+				{
+					ran = rand() % 3;
+					switch (ran)
+					{
+					case 0://좌익수 앞
+					{//64, 22
+						while (y >= 21)
+						{
+							if (y < 32)
+							{
+								gotoxy(80, 0);
+								printf("좌익수 앞에 떨어지는 타구");
+							}
+							gotoxy(x, y);
+							printf("*");
+							Sleep(HIT_SPEED);
+							gotoxy(x, y);
+							printf(" ");
+							x -= 1;
+							y--;
+						}
+						gotoxy(80, 0);
+						printf("                                 ");
+						gotoxy(80, 0);
+						printf("안타입니다.");
+						gotoxy(x, y);
+						printf("*");
+						break;
+					}
+					case 1://중견수 앞
+					{//85, 16
+						while (y >= 16)
+						{
+							if (y < 32)
+							{
+								gotoxy(80, 0);
+								printf("중견수 앞에 떨어지는 타구");
+							}
+							gotoxy(x, y);
+							printf("*");
+							Sleep(HIT_SPEED);
+							gotoxy(x, y);
+							printf(" ");
+							y--;
+						}
+						gotoxy(80, 0);
+						printf("                                  ");
+						gotoxy(80, 0);
+						printf("안타입니다.");
+						gotoxy(x, y);
+						printf("*");
+						break;
+					}
+					case 2://우익수 앞
+					{//106, 22
+						while (y >= 21)
+						{
+							if (y < 32)
+							{
+								gotoxy(80, 0);
+								printf("우익수 앞에 떨어지는 타구");
+							}
+							gotoxy(x, y);
+							printf("*");
+							Sleep(HIT_SPEED);
+							gotoxy(x, y);
+							printf(" ");
+							x += 1;
+							y--;
+						}
+						gotoxy(80, 0);
+						printf("                                           ");
+						gotoxy(80, 0);
+						printf("안타입니다.");
+						gotoxy(x, y);
+						printf("*");
+						break;
+					}
+					}
+				}
+			}
+			//2루타 또는 3루타
+			else
+			{
+				homerun_single = (rand() % 100 < 20) ? 3 : 2;
+				//3루타
+				if (homerun_single == 3)
+				{
+					//130, 21
+					while (y >= 23)
+					{
+						if (y < 33)
+						{
+							gotoxy(80, 0);
+							printf("경기장 우측 깊숙한 타구");
+						}
+						gotoxy(x, y);
+						printf("*");
+						Sleep(HIT_SPEED);
+						gotoxy(x, y);
+						printf(" ");
+						if (y % 2 == 0)
+						{
+							x += 4;
+						}
+						else
+						{
+							x += 1;
+						}
+						y--;
+					}
+					def_x = (x + 1);
+					def_y = y;
+					gotoxy(80, 0);
+					printf("                                        ");
+					gotoxy(80, 0);
+					printf("3루타가 나옵니다!");
+					gotoxy(x + 1, y);
+					printf("*");
+				}
+				//2루타
+				else
+				{
+					ran = rand() % 7;
+
+					switch (ran)
+					{
+					case 0:
+					{//43, 21
+						while (y >= 21)
+						{
+							if (y < 31)
+							{
+								gotoxy(80, 0);
+								printf("좌측으로 깊숙한 타구");
+							}
+							gotoxy(x, y);
+							printf("*");
+							Sleep(HIT_SPEED);
+							gotoxy(x, y);
+							printf(" ");
+							x -= 2;
+							y--;
+						}
+						gotoxy(80, 0);
+						printf("                                ");
+						gotoxy(80, 0);
+						printf("2루타가 나옵니다!");
+						gotoxy(x, y);
+						printf("*");
+						break;
+					}
+					case 1:
+					{//61, 15
+						while (y >= 15)
+						{
+							if (y < 30)
+							{
+								gotoxy(80, 0);
+								printf("좌중간을 가르는 타구");
+							}
+							gotoxy(x, y);
+							printf("*");
+							Sleep(HIT_SPEED);
+							gotoxy(x, y);
+							printf(" ");
+							x -= 1;
+							y--;
+						}
+						gotoxy(80, 0);
+						printf("                                      ");
+						gotoxy(80, 0);
+						printf("2루타가 나옵니다!");
+						gotoxy(x, y + 1);
+						printf("*");
+						break;
+					}
+					case 2:
+					{//73, 12
+						while (y >= 12)
+						{
+							if (y < 30)
+							{
+								gotoxy(80, 0);
+								printf("좌중간을 가르는 타구");
+							}
+							gotoxy(x, y);
+							printf("*");
+							Sleep(HIT_SPEED);
+							gotoxy(x, y);
+							printf(" ");
+							if (y % 2 == 0)
+							{
+								x -= 1;
+							}
+							else
+							{
+								x -= 0;
+							}
+							y--;
+						}
+						gotoxy(80, 0);
+						printf("                                      ");
+						gotoxy(80, 0);
+						printf("2루타가 나옵니다!");
+						gotoxy(x, y);
+						printf("*");
+						break;
+					}
+					case 3:
+					{//85, 5
+						while (y >= 7)
+						{
+							if (y < 30)
+							{
+								gotoxy(80, 0);
+								printf("중견수 키를 넘어가는 타구");
+							}
+							gotoxy(x, y);
+							printf("*");
+							Sleep(HIT_SPEED);
+							gotoxy(x, y);
+							printf(" ");
+							y--;
+							map();
+						}
+						gotoxy(80, 0);
+						printf("                                      "); 
+						gotoxy(80, 0);
+						printf("2루타가 나옵니다!");
+						gotoxy(x + 1, y);
+						printf("*");
+						break;
+					}
+					case 4:
+					{//97, 12
+						while (y >= 12)
+						{
+							if (y < 30)
+							{
+								gotoxy(80, 0);
+								printf("좌우간을 가르는 타구");
+							}
+							gotoxy(x, y);
+							printf("*");
+							Sleep(HIT_SPEED);
+							gotoxy(x, y);
+							printf(" ");
+							if (y % 2 == 0)
+							{
+								x += 1;
+							}
+							else
+							{
+								x += 0;
+							}
+							y--;
+						}
+						gotoxy(80, 0);
+						printf("                                      ");
+						gotoxy(80, 0);
+						printf("2루타가 나옵니다!");
+						gotoxy(x, y);
+						printf("*");
+						break;
+					}
+					case 5:
+					{//119, 15
+						while (y >= 15)
+						{
+							if (y < 30)
+							{
+								gotoxy(80, 0);
+								printf("좌우간을 가르는 타구");
+							}
+							gotoxy(x, y);
+							printf("*");
+							Sleep(HIT_SPEED);
+							gotoxy(x, y);
+							printf(" ");
+							x += 1;
+							y--;
+						}
+						gotoxy(80, 0);
+						printf("                                      ");
+						gotoxy(80, 0);
+						printf("2루타가 나옵니다!");
+						gotoxy(x, y + 1);
+						printf("*");
+						break;
+					}
+					case 6:
+					{//124, 21
+						while (y >= 21)
+						{
+							if (y < 33)
+							{
+								gotoxy(80, 0);
+								printf("우익수 키 넘어가는 타구");
+							}
+							gotoxy(x, y);
+							printf("*");
+							Sleep(HIT_SPEED);
+							gotoxy(x, y);
+							printf(" ");
+							x += 2;
+							y--;
+						}
+						gotoxy(80, 0);
+						printf("                                      ");
+						gotoxy(80, 0);
+						printf("2루타가 나옵니다!");
+						gotoxy(x, y);
+						printf("*");
+						break;
+					}
+					}
+				}
+			}
 		}
 	}
-	ran2 = rand() % 135;
-	ran3 = rand() % 40;
-
-	if (ran2 < 37)
-	{
-		ran2 = ran2 + (37 - ran2);
-	}
-	gotoxy(ran2, ran3);
-	printf("*");
+	
 }
 
 //번트
@@ -199,28 +932,33 @@ void hit_bunt()
 	int ran_bunt = 0;
 	ran_bunt = (rand() % 100 < 10) ? 0 : 1;
 
-	int i = 85;
+	int x = 84;
+	int y = 40;
 
 	system("cls");
-	man();
-	//홈: 85, 40
-	if (ran_bunt == 0)//번트안타
+	map();
+	
+	if (ran_bunt == 0)//번트안타 -> 3루 방면
 	{
 		//좌표: 56, 31
-		for (int j = 39; j < 30; j--)//총 9번
-		{
-			gotoxy(i, j);
-			printf(" ");
-			/*Sleep(1000);
-			gotoxy(i, j);
-			printf("*");*/
-
-			i -= 4;
-			if (j >= 33)
+		while ( y >= 31) {
+			if (y < 39)
 			{
-				i = 114;
+				gotoxy(80, 0);
+				printf("3루로 향하는 공");
 			}
+			gotoxy(x, y);
+			printf("*");
+			Sleep(BUNT_SPEED);
+			gotoxy(x, y);
+			printf(" ");
+			x -= 3;
+			y--;
 		}
+		gotoxy(80, 0);
+		printf("                                      ");
+		gotoxy(80, 0);
+		printf("행운의 안타가 나옵니다!");
 		gotoxy(56, 31);
 		printf("*");
 	}
@@ -229,39 +967,63 @@ void hit_bunt()
 		ran_bunt = (rand() % 100 < 15) ? 0 : 1;
 		if (ran_bunt == 0)//파울
 		{
-			//좌표: 60, 35
-			for (int j = 39; j < 34; j--)
+			ran_bunt = (rand() % 100 < 50) ? 0 : 1;
+			if (ran_bunt == 0)//파울 왼쪽으로 날리기
 			{
-				gotoxy(i, j);
-				printf("*");
-				/*Sleep(1000);
-				gotoxy(i, j);
-				printf(" ");*/
-				i -= 5;
-			}
-			gotoxy(60, 35);
-			printf("*");
-		}
-		else//아웃
-		{
-			//좌표: 114, 31
-
-			for (int j = 39; j < 30; j--)
-			{
-				gotoxy(i, j);
-				printf("*");
-
-				/*Sleep(1000);
-
-				gotoxy(i, j);
-				printf(" ");*/
-
-				i += 4;
-				if (j >= 33)
-				{
-					i = 114;
+				
+				while (y >= 35) {
+					gotoxy(x, y);
+					printf("*");
+					Sleep(BUNT_SPEED);
+					gotoxy(x, y);
+					printf(" ");
+					x -= 5;
+					y--;
 				}
+				gotoxy(80, 0);
+				printf("파울이 나옵니다.");
+				gotoxy(54, 35);
+				printf("*");
 			}
+			else//파울 오른쪽으로 날리기
+			{
+				while (y >= 35)
+				{
+					gotoxy(x, y);
+					printf("*");
+					Sleep(BUNT_SPEED);
+					gotoxy(x, y);
+					printf(" ");
+					x += 5;
+					y--;
+				}
+				gotoxy(80, 0);
+				printf("파울이 나옵니다.");
+				gotoxy(114, 35);
+				printf("*");
+
+			}
+		}
+		else//아웃 -> 1루 방향
+		{
+			while ( y >= 31) {
+				if (y < 39)
+				{
+					gotoxy(80, 0);
+					printf("1루쪽");
+				}
+				gotoxy(x, y);
+				printf("*");
+				Sleep(BUNT_SPEED);
+				gotoxy(x, y);
+				printf(" ");
+				x += 3;
+				y--;
+			}
+			gotoxy(80, 0);
+			printf("                                      ");
+			gotoxy(80, 0);
+			printf("아웃!");
 			gotoxy(114, 31);
 			printf("*");
 		}
@@ -293,7 +1055,7 @@ int main()
 		//변화구 또는 직구 나오게 랜덤
 		ran = (rand() % 100 < 50) ? 0 : 1;
 
-		man();
+		map();
 
 		hit = print_hitting();
 
